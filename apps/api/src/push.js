@@ -4,19 +4,28 @@ import { query } from './db.js';
 const publicKey = String(process.env.VAPID_PUBLIC_KEY || '').trim();
 const privateKey = String(process.env.VAPID_PRIVATE_KEY || '').trim();
 const subject = String(process.env.VAPID_SUBJECT || 'mailto:support@directqr.local').trim();
-const configured = Boolean(publicKey && privateKey);
+let configured = false;
+let configurationError = null;
 
-if (configured) {
-  webpush.setVapidDetails(subject, publicKey, privateKey);
+if (publicKey && privateKey) {
+  try {
+    webpush.setVapidDetails(subject, publicKey, privateKey);
+    configured = true;
+  } catch (error) {
+    configurationError = String(error?.message || 'Invalid VAPID configuration.');
+    console.error('DirectQR push configuration is invalid:', configurationError);
+  }
+} else {
+  configurationError = 'Add VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY in the DirectQR service environment.';
 }
 
 export function pushConfiguration() {
-  return { configured, publicKey: configured ? publicKey : null };
+  return { configured, publicKey: configured ? publicKey : null, error: configurationError };
 }
 
 export function assertPushConfigured() {
   if (!configured) {
-    throw Object.assign(new Error('Push notifications are not configured yet. Add VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY in the DirectQR service environment.'), { status: 503 });
+    throw Object.assign(new Error(`Push notifications are not configured: ${configurationError || 'missing VAPID keys.'}`), { status: 503 });
   }
 }
 

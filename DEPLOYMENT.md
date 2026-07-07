@@ -1,4 +1,4 @@
-# DirectQR v1.0.0 — Render deployment
+# DirectQR v1.0.1 — Render deployment
 
 ## Critical separation rule
 

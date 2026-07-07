@@ -1,4 +1,4 @@
-# DirectQR v1.0.0 — Live acceptance test
+# DirectQR v1.0.1 — Live acceptance test
 
 Run this only after deploying to HTTPS.
 

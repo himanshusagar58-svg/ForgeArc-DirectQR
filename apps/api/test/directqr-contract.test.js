@@ -53,3 +53,22 @@ test('new customer QR submissions publish an SSE event and attempt VAPID Web Pus
   assert.match(source, /notifyRestaurantQrOrder\(/);
   assert.match(source, /app\.post\('\/api\/notifications\/test'/);
 });
+
+
+test('DirectQR client cancels scheduled QR alarm tones when pending requests are cleared', async () => {
+  const source = await fs.readFile(new URL('../../web/src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /qrAlarmTimeoutsRef/);
+  assert.match(source, /window\.clearTimeout\(timeoutId\)/);
+  assert.match(source, /onPendingQrOrdersChange\?\.\(nextOrders\.length\)/);
+});
+
+test('DirectQR keeps the API running when VAPID configuration is malformed and bypasses service-worker cache', async () => {
+  const [pushSource, apiSource] = await Promise.all([
+    fs.readFile(new URL('../src/push.js', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../src/index.js', import.meta.url), 'utf8'),
+  ]);
+  assert.match(pushSource, /DirectQR push configuration is invalid/);
+  assert.match(pushSource, /let configured = false/);
+  assert.match(apiSource, /Service-Worker-Allowed/);
+  assert.match(apiSource, /no-store, max-age=0, must-revalidate/);
+});

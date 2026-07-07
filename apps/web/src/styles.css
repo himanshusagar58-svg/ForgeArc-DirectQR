@@ -791,26 +791,41 @@ details[open]>.admin-category-head .admin-category-chevron{transform:rotate(180d
 .commercial-legacy-note{padding:10px 12px;border:1px solid #efcf8b;background:#fffaf0;color:#805100;border-radius:10px;line-height:1.45}
 .super-admin-form input:disabled,.super-admin-form select:disabled{background:#f2f5f8;color:#6e8093;cursor:not-allowed}
 
-/* DirectQR v1.0.0 — standalone black / teal / white operator console. */
-:root{--dq-teal:#14b8a6;--dq-teal-deep:#0f766e;--dq-teal-soft:#d9fbf6;--dq-ink:#f5fffd;--dq-panel:#101817;--dq-panel-2:#15201f;--dq-line:rgba(154,255,243,.17)}
-.forgearc-console{--accent:var(--dq-teal)!important;--restaurant-accent:var(--dq-teal)!important;background:#07100f!important;color:#eefcf9!important}
-.forgearc-console .sidebar,.forgearc-console .mobile-app-top{background:#091210!important;border-color:var(--dq-line)!important;color:#effefa!important}
-.forgearc-console .sidebar-brand strong,.forgearc-console .mobile-brand strong,.forgearc-console .page h1,.forgearc-console .order-header h1{color:#f6fffd!important}
-.forgearc-console .sidebar-brand span,.forgearc-console .account span,.forgearc-console .muted{color:#9bb8b3!important}
-.forgearc-console .desktop-nav button,.forgearc-console .mobile-bottom-nav{color:#bfd9d4!important}
-.forgearc-console .desktop-nav button.nav-active,.forgearc-console .mobile-bottom-nav button.active{background:rgba(20,184,166,.16)!important;color:#74f7e8!important}
-.forgearc-console .main-panel,.forgearc-console .page,.forgearc-console .order-page{background:#07100f!important}
-.forgearc-console .page-header,.forgearc-console .order-header{border-color:var(--dq-line)!important}
-.forgearc-console .report-card,.forgearc-console .settings-card,.forgearc-console .menu-panel,.forgearc-console .cart-panel,.forgearc-console .table-card,.forgearc-console .kot-card,.forgearc-console .empty{background:var(--dq-panel)!important;border-color:var(--dq-line)!important;color:#effefa!important;box-shadow:none!important}
-.forgearc-console .report-title h2,.forgearc-console .settings-card h2,.forgearc-console .menu-item h3,.forgearc-console .table-card strong{color:#f3fffc!important}
-.forgearc-console .table-card.free{background:#0e1b19!important}.forgearc-console .table-card.active{border-color:rgba(20,184,166,.65)!important;background:#0d2320!important}
-.forgearc-console input,.forgearc-console textarea,.forgearc-console select{background:#0a1513!important;border-color:rgba(161,255,243,.23)!important;color:#effefa!important}
-.forgearc-console .primary{background:var(--dq-teal)!important;border-color:var(--dq-teal)!important;color:#04201c!important}
-.forgearc-console .outline,.forgearc-console .ghost{border-color:rgba(154,255,243,.35)!important;color:#c9fff7!important;background:transparent!important}
-.forgearc-console .outline:hover,.forgearc-console .ghost:hover{border-color:var(--dq-teal)!important;background:rgba(20,184,166,.12)!important}
-.forgearc-console .status-pill.active,.forgearc-console .status-pill.paid{background:#093a34!important;border-color:#1ebaa8!important;color:#9cffef!important}
-.forgearc-console .status-pill.setup-pending,.forgearc-console .status-pill.due{background:#3a2c0b!important;border-color:#d7a82d!important;color:#ffe7a2!important}
-.forgearc-console .status-pill.overdue,.forgearc-console .status-pill.expired,.forgearc-console .status-pill.suspended,.forgearc-console .status-pill.disabled{background:#3d1516!important;border-color:#e07878!important;color:#ffd3d3!important}
-.super-admin-shell{background:#07100f!important;color:#effefa!important}.super-admin-header{background:#091210!important;border-color:var(--dq-line)!important}.super-admin-brand strong,.super-admin-page-header h1,.panel-title h2,.super-admin-form h3{color:#f4fffc!important}.super-admin-brand span,.super-admin-account,.super-admin-page .muted{color:#9ebbb5!important}.super-admin-panel,.super-admin-restaurant-card{background:#101817!important;border-color:var(--dq-line)!important;color:#effefa!important;box-shadow:none!important}.super-admin-restaurant-card:hover{border-color:var(--dq-teal)!important;box-shadow:0 12px 30px rgba(0,0,0,.24)!important}.super-admin-card-head h2,.super-admin-card-head p,.super-admin-restaurant-card footer,.super-admin-restaurant-card footer strong{color:#effefa!important}.super-admin-card-metrics>div,.setup-task,.support-category-list>div,.support-menu-items article{background:#0b1514!important;border-color:var(--dq-line)!important;color:#d8f4ef!important}.super-admin-tabs{border-color:var(--dq-line)!important}.super-admin-tabs button{color:#9db6b1!important}.super-admin-tabs button.active{color:#83f9ea!important;border-bottom-color:var(--dq-teal)!important}.super-admin-form label{color:#cce5e0!important}.super-admin-form input,.super-admin-form select,.super-admin-form textarea{background:#0a1513!important;border-color:rgba(161,255,243,.23)!important;color:#effefa!important}.super-admin-form input:disabled,.super-admin-form select:disabled,.commercial-form input[readonly]{background:#111d1b!important;color:#a5c6c0!important}.support-active-banner{background:#0b2824!important;border-color:rgba(20,184,166,.55)!important}.support-active-banner h2,.support-active-banner p{color:#dffefa!important}.notification-settings-card .settings-inline-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-@media(max-width:760px){.forgearc-console .mobile-bottom-nav{background:#091210!important;border-top-color:var(--dq-line)!important}.forgearc-console .mobile-more-sheet{background:#101817!important;border-color:var(--dq-line)!important}.super-admin-header{background:#091210!important}}
-.directqr-logo{width:42px;height:42px;display:block;flex:0 0 auto}.login-logo.directqr-logo{width:50px;height:50px}.sidebar-logo.directqr-logo,.mobile-logo.directqr-logo{width:38px;height:38px}@media(max-width:620px){.directqr-logo{width:37px;height:37px}}
+/* DirectQR v1.0.1 — match the established ForgeArc Mini POS operator UI.
+   DirectQR retains its product labels but uses the same light console, card hierarchy,
+   modal contrast, and responsive surfaces as Mini POS. */
+.directqr-logo{width:42px;height:42px;display:block;flex:0 0 auto}
+.login-logo.directqr-logo{width:50px;height:50px}
+.sidebar-logo.directqr-logo,.mobile-logo.directqr-logo{width:38px;height:38px}
+.qr-orders-view{display:grid;gap:16px}
+.qr-orders-intro{align-items:center}
+.qr-alert-controls,.qr-sound-control{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qr-alert-controls .outline,.qr-sound-control .outline{display:inline-flex;align-items:center;gap:7px}
+.qr-order-count{display:inline-grid;min-width:18px;height:18px;place-items:center;padding:0 5px;border-radius:999px;background:#d8612a;color:#fff;font-size:11px;line-height:1}
+.sound-enabled{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid #b9dfc8;border-radius:10px;color:#087443;background:#eaf8ef;font-size:12px;font-weight:800}
+.qr-order-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.qr-order-card{display:grid;gap:13px;padding:17px;border:1px solid #d9e3f0;border-left:5px solid #147bff;border-radius:14px;background:#fff;color:#17345a;box-shadow:0 8px 22px rgba(17,42,77,.045)}
+.qr-order-card header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.qr-order-card h3{margin:3px 0 0;color:#17345a;font-size:21px}
+.qr-order-card time{color:#718096;font-size:12px;white-space:nowrap}
+.qr-order-kicker{color:#147bff;font-size:10px;font-weight:900;letter-spacing:.12em}
+.qr-customer{display:grid;gap:3px;padding:10px;border-radius:10px;background:#f8fbff;border:1px solid #dce7f1}
+.qr-customer strong{font-size:14px;color:#183658}
+.qr-customer span,.qr-customer small{color:#64748b;font-size:12px}
+.qr-order-items{display:grid;gap:9px;padding:0;margin:0;list-style:none}
+.qr-order-items li{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;color:#304860;font-size:13px}
+.qr-order-items li span{display:grid;gap:3px;min-width:0}
+.qr-order-items li small{color:#718096;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qr-order-items li strong{color:#17345a;white-space:nowrap}
+.qr-order-note{margin:0;padding:10px;border-radius:9px;color:#526980;background:#f8fbff;border:1px solid #e1ebf4;font-size:13px}
+.qr-order-total{display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid #e5edf5;font-size:14px}
+.qr-order-total span{color:#718096}.qr-order-total strong{color:#17345a;font-size:16px}
+.qr-order-card footer{display:grid;grid-template-columns:1fr 1.4fr;gap:9px}.qr-order-card footer button{min-height:39px}
+.directqr-free-table{display:flex;align-items:center;gap:7px;margin-top:auto;color:#5a7694;font-size:12px;font-weight:750}
+.directqr-floor-section{display:grid;gap:14px;margin-top:4px}.section-inline-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}.section-inline-heading h2{margin:0;color:#17345a;font-size:25px}.section-inline-heading .eyebrow{margin:0 0 6px}
+@media(max-width:760px){
+  .directqr-logo{width:37px;height:37px}
+  .qr-orders-intro{align-items:flex-start}.qr-order-grid{grid-template-columns:1fr}.qr-order-card{padding:14px}
+  .section-inline-heading{align-items:flex-start}.section-inline-heading h2{font-size:22px}
+  .qr-alert-controls{width:100%}.qr-alert-controls .outline{flex:1;justify-content:center;min-height:42px}
+}

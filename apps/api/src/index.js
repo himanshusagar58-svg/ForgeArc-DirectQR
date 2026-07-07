@@ -2614,6 +2614,11 @@ if (fs.existsSync(directQrDist)) {
 }
 const clientDist = path.resolve(here, "../../web/dist");
 if (isProduction && fs.existsSync(clientDist)) {
+  app.get('/sw.js', (_req, res) => {
+    res.set('Cache-Control', 'no-store, max-age=0, must-revalidate');
+    res.set('Service-Worker-Allowed', '/');
+    return res.sendFile(path.join(clientDist, 'sw.js'));
+  });
   app.use(express.static(clientDist, { maxAge: "1h", etag: true }));
   app.get("{*splat}", (req, res, next) => {
     if (req.path.startsWith("/api") || req.path.startsWith('/order')) return next();

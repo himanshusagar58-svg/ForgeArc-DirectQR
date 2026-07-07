@@ -839,6 +839,10 @@ function PosShell({ session, onSessionChange, onLogout, toast, show }) {
   const [qrEventVersion, setQrEventVersion] = useState(0);
   const [qrSoundEnabled, setQrSoundEnabled] = useState(false);
   const qrAlarmTimerRef = useRef(null);
+  const qrAlarmTimeoutsRef = useRef(new Set());
+  const qrAlarmOscillatorsRef = useRef(new Set());
+  const qrAlarmActiveRef = useRef(false);
+  const [pendingQrRequestCount, setPendingQrRequestCount] = useState(0);
   const [pushState, setPushState] = useState({ label: 'Enable mobile alerts', supported: true });
   const enablePushNotifications = useCallback(async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
@@ -859,12 +863,27 @@ function PosShell({ session, onSessionChange, onLogout, toast, show }) {
         show('Notification permission was not granted. Enable it in this browser/device settings to receive background QR alerts.', 'error');
         return;
       }
-      const registration = await navigator.serviceWorker.register('/sw.js');
+      const applicationServerKey = urlBase64ToUint8Array(config.publicKey);
+      if (applicationServerKey.byteLength !== 65) {
+        throw new Error('The DirectQR notification key is invalid. Regenerate the VAPID key pair and update both Render variables.');
+      }
+      const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' });
+      await navigator.serviceWorker.ready;
+      await registration.update().catch(() => undefined);
       let subscription = await registration.pushManager.getSubscription();
+      const existingKey = subscription?.options?.applicationServerKey;
+      if (subscription && existingKey) {
+        const currentKey = new Uint8Array(existingKey);
+        const keyChanged = currentKey.length !== applicationServerKey.length || currentKey.some((value, index) => value !== applicationServerKey[index]);
+        if (keyChanged) {
+          await subscription.unsubscribe();
+          subscription = null;
+        }
+      }
       if (!subscription) {
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(config.publicKey),
+          applicationServerKey,
         });
       }
       await api('/notifications/subscribe', { method: 'POST', body: JSON.stringify(subscription.toJSON()) });
@@ -872,52 +891,81 @@ function PosShell({ session, onSessionChange, onLogout, toast, show }) {
       show('DirectQR mobile alerts are enabled for this device. Use Test alert in Settings before go-live.');
     } catch (error) {
       setPushState({ label: 'Enable mobile alerts', supported: true });
-      show(error.message || 'Could not enable mobile notifications.', 'error');
+      const message = /push service error/i.test(String(error?.message || ''))
+        ? 'Browser push registration failed. In Brave, allow notifications and Push Messaging for this site, then retry. If the browser blocks its push service, keep the DirectQR console open for looping sound and live alerts.'
+        : (error.message || 'Could not enable mobile notifications.');
+      show(message, 'error');
     }
   }, [show]);
 
+  const clearScheduledQrAlarm = useCallback(() => {
+    for (const timeoutId of qrAlarmTimeoutsRef.current) window.clearTimeout(timeoutId);
+    qrAlarmTimeoutsRef.current.clear();
+    for (const oscillator of qrAlarmOscillatorsRef.current) {
+      try { oscillator.stop(); } catch { /* oscillator may have ended already */ }
+      try { oscillator.disconnect(); } catch { /* no-op */ }
+    }
+    qrAlarmOscillatorsRef.current.clear();
+  }, []);
   const ringQrAlarm = useCallback(() => {
     const context = window.__directqrAudioContext;
-    if (!context || context.state !== 'running') return;
-    // A longer seven-note pattern is intentionally noticeable in a café environment.
-    // It repeats until every pending QR request is accepted or rejected.
+    if (!qrAlarmActiveRef.current || !context || context.state !== 'running') return;
     [[0, 920], [360, 700], [720, 920], [1080, 700], [1440, 1040], [1860, 820], [2250, 1040]].forEach(([delay, frequency]) => {
-      window.setTimeout(() => {
+      const timeoutId = window.setTimeout(() => {
+        qrAlarmTimeoutsRef.current.delete(timeoutId);
+        if (!qrAlarmActiveRef.current || context.state !== 'running') return;
         const oscillator = context.createOscillator();
         const gain = context.createGain();
+        qrAlarmOscillatorsRef.current.add(oscillator);
         oscillator.type = 'sine';
         oscillator.frequency.value = frequency;
         gain.gain.setValueAtTime(0.0001, context.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.025);
         gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.34);
         oscillator.connect(gain).connect(context.destination);
+        oscillator.onended = () => {
+          qrAlarmOscillatorsRef.current.delete(oscillator);
+          try { oscillator.disconnect(); } catch { /* no-op */ }
+        };
         oscillator.start();
         oscillator.stop(context.currentTime + 0.36);
       }, delay);
+      qrAlarmTimeoutsRef.current.add(timeoutId);
     });
   }, []);
   const stopQrAlarm = useCallback(() => {
+    qrAlarmActiveRef.current = false;
     if (qrAlarmTimerRef.current) {
       window.clearInterval(qrAlarmTimerRef.current);
       qrAlarmTimerRef.current = null;
     }
-  }, []);
+    clearScheduledQrAlarm();
+  }, [clearScheduledQrAlarm]);
   const startQrAlarm = useCallback(() => {
     const context = window.__directqrAudioContext;
-    if (!context || context.state !== 'running') return;
+    if (!context || context.state !== 'running' || qrAlarmActiveRef.current) return;
+    qrAlarmActiveRef.current = true;
     ringQrAlarm();
-    if (!qrAlarmTimerRef.current) qrAlarmTimerRef.current = window.setInterval(ringQrAlarm, 6400);
+    qrAlarmTimerRef.current = window.setInterval(ringQrAlarm, 6400);
   }, [ringQrAlarm]);
+  const applyPendingQrRequestCount = useCallback((count) => {
+    const pending = Math.max(0, Number(count || 0));
+    setPendingQrRequestCount(pending);
+    if (!directQrOrdering || pending === 0) {
+      stopQrAlarm();
+      return;
+    }
+    startQrAlarm();
+  }, [directQrOrdering, startQrAlarm, stopQrAlarm]);
   const reconcileQrAlarm = useCallback(async () => {
-    if (!directQrOrdering) { stopQrAlarm(); return; }
+    if (!directQrOrdering) { applyPendingQrRequestCount(0); return; }
     try {
       const result = await api('/qr-orders');
-      if (Array.isArray(result.orders) && result.orders.length) startQrAlarm();
-      else stopQrAlarm();
+      applyPendingQrRequestCount(Array.isArray(result.orders) ? result.orders.length : 0);
     } catch {
       // Do not stop an active alert merely because a refresh temporarily failed.
     }
-  }, [directQrOrdering, startQrAlarm, stopQrAlarm]);
+  }, [applyPendingQrRequestCount, directQrOrdering]);
   const enableQrSound = useCallback(async () => {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) {
@@ -929,9 +977,9 @@ function PosShell({ session, onSessionChange, onLogout, toast, show }) {
     await context.resume();
     setQrSoundEnabled(true);
     await reconcileQrAlarm();
-    if (!qrAlarmTimerRef.current) ringQrAlarm();
-    show('QR order sound is enabled. New-order alerts repeat until cleared.');
-  }, [reconcileQrAlarm, ringQrAlarm, show]);
+    if (pendingQrRequestCount > 0) startQrAlarm();
+    show('QR order sound is enabled. It stops immediately when the pending queue is cleared.');
+  }, [pendingQrRequestCount, reconcileQrAlarm, show, startQrAlarm]);
   useEffect(() => {
     if (!directQrOrdering) { stopQrAlarm(); return void 0; }
     const stream = new EventSource('/api/events/stream');
@@ -944,6 +992,7 @@ function PosShell({ session, onSessionChange, onLogout, toast, show }) {
     stream.addEventListener('qr-order:new', onNewQrOrder);
     return () => { stream.close(); stopQrAlarm(); };
   }, [directQrOrdering, startQrAlarm, stopQrAlarm, show]);
+
 
   const desktopNavigation = [
     ...(isAdmin ? [["dashboard", "Owner dashboard", "dashboard"]] : []),
@@ -1040,7 +1089,7 @@ function PosShell({ session, onSessionChange, onLogout, toast, show }) {
 
     <main className="main-panel">
       {view === "dashboard" && isAdmin && <OwnerDashboard show={show} timezone={session.timezone || "Asia/Kolkata"} onOpenReports={() => goTo("reports")} />}
-      {view === "tables" && <DirectQRTableView onOpen={openTable} onOpenKot={() => goTo("kot")} show={show} confirm={confirm} canManageTables={can("manage_tables")} permissions={permissions} isAdmin={isAdmin} qrEventVersion={qrEventVersion} qrSoundEnabled={qrSoundEnabled} onEnableQrSound={enableQrSound} onEnableNotifications={enablePushNotifications} notificationLabel={pushState.label} onQrOrdersChanged={reconcileQrAlarm} />}
+      {view === "tables" && <DirectQRTableView onOpen={openTable} onOpenKot={() => goTo("kot")} show={show} confirm={confirm} canManageTables={can("manage_tables")} permissions={permissions} isAdmin={isAdmin} qrEventVersion={qrEventVersion} qrSoundEnabled={qrSoundEnabled} onEnableQrSound={enableQrSound} onEnableNotifications={enablePushNotifications} notificationLabel={pushState.label} onPendingQrOrdersChange={applyPendingQrRequestCount} onQrOrdersChanged={reconcileQrAlarm} />}
       {view === "kot" && <KotView onOpen={openTable} onOpenTables={() => goTo("tables")} show={show} />}
       {view === "order" && <OrderView table={activeTable} quickAction={quickAction} onQuickActionHandled={() => setQuickAction(null)} permissions={permissions} isAdmin={isAdmin} canVoid={can("void_orders")} confirm={confirm} requestForm={requestForm} onDirtyChange={setOrderDirty} onBack={() => {
         setActiveTable(null);
@@ -1115,7 +1164,7 @@ function InsightList({ rows, value }) {
   if (!rows?.length) return <div className="empty compact">No completed sales in this period.</div>;
   return <ol className="insight-list">{rows.map((row, index) => <li key={`${row.itemName}-${index}`}><span title={row.itemName}><b>{index + 1}</b>{row.itemName}</span><strong>{value(row)}</strong></li>)}</ol>;
 }
-function DirectQRTableView({ onOpen, onOpenKot, show, confirm, canManageTables, permissions = {}, isAdmin = false, qrEventVersion = 0, qrSoundEnabled = false, onEnableQrSound, onEnableNotifications, notificationLabel = 'Enable mobile alerts', onQrOrdersChanged }) {
+function DirectQRTableView({ onOpen, onOpenKot, show, confirm, canManageTables, permissions = {}, isAdmin = false, qrEventVersion = 0, qrSoundEnabled = false, onEnableQrSound, onEnableNotifications, notificationLabel = 'Enable mobile alerts', onPendingQrOrdersChange, onQrOrdersChanged }) {
   const [tables, setTables] = useState([]);
   const [qrOrders, setQrOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1130,11 +1179,13 @@ function DirectQRTableView({ onOpen, onOpenKot, show, confirm, canManageTables, 
   const load = useCallback(async () => {
     try {
       const [tableData, qrData] = await Promise.all([api('/tables'), api('/qr-orders')]);
+      const nextOrders = qrData.orders || [];
       setTables(tableData.tables || []);
-      setQrOrders(qrData.orders || []);
+      setQrOrders(nextOrders);
+      onPendingQrOrdersChange?.(nextOrders.length);
     } catch (error) { show(error.message, 'error'); }
     finally { setLoading(false); }
-  }, [show]);
+  }, [show, onPendingQrOrdersChange]);
   useEffect(() => {
     load();
     const timer = window.setInterval(load, 15000);

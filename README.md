@@ -1,4 +1,4 @@
-# DirectQR v1.0.0
+# DirectQR v1.0.1
 
 DirectQR is a standalone QR-first restaurant ordering platform. It has its **own PostgreSQL database** and must never share the ForgeArc Mini POS database.
 
