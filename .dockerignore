@@ -1,0 +1,7 @@
+.git
+.gitignore
+.env
+.env.*
+*.log
+apps/web/dist
+coverage

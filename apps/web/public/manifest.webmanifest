@@ -1,0 +1,12 @@
+{
+  "name": "DirectQR Console",
+  "short_name": "DirectQR",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "background_color": "#071514",
+  "theme_color": "#0e9f8f",
+  "icons": [
+    { "src": "/directqr-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/directqr-icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

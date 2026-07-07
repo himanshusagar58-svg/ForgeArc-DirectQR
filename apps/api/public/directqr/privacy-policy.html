@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy | DirectQR</title>
+  <meta name="description" content="Privacy information for DirectQR customer accounts and QR table ordering." />
+  <link rel="icon" type="image/png" href="/order/assets/directqr-favicon.png?v=1.0.0" />
+  <style>
+    :root{--bg:#07100f;--panel:#0d1a18;--line:rgba(149,255,241,.16);--text:#effefa;--muted:#a7c2bc;--teal:#14b8a6;--teal-soft:rgba(20,184,166,.13)}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 86% 0,rgba(20,184,166,.14),transparent 28rem),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.65}.shell{width:min(900px,calc(100% - 32px));margin:auto;padding:32px 0 68px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-bottom:22px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-weight:850;letter-spacing:.05em}.mark{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:var(--teal);color:#06201c;font-weight:950}.back{color:#bafff6;text-decoration:none;border:1px solid rgba(149,255,241,.36);border-radius:999px;padding:8px 13px;font-size:14px;font-weight:700}.hero{padding:48px 0 28px}.eyebrow{color:#75f5e8;font-size:12px;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1{font-size:clamp(2.2rem,7vw,4.5rem);letter-spacing:-.06em;line-height:.95;margin:10px 0 17px}.lead{max-width:720px;color:var(--muted);font-size:1.05rem}.notice{padding:18px 20px;background:var(--teal-soft);border-left:3px solid var(--teal);border-radius:0 14px 14px 0;margin:22px 0 30px}.grid{display:grid;gap:15px}section{padding:22px;border:1px solid var(--line);background:rgba(13,26,24,.88);border-radius:17px}h2{margin:0 0 10px;font-size:1.2rem}p{margin:0 0 12px}p:last-child{margin-bottom:0}ul{margin:10px 0 0;padding-left:21px}li{margin:5px 0}.contact{margin-top:13px;padding:15px;border-radius:12px;background:#082620;border:1px solid rgba(20,184,166,.28)}a{color:#8dfbf0}footer{text-align:center;padding-top:26px;color:#8ea9a3;font-size:13px}@media(max-width:560px){.top{align-items:flex-start}.hero{padding-top:37px}section{padding:19px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <a class="brand" id="backLink" href="/"><span class="mark">DQ</span><span>DIRECTQR</span></a>
+      <a class="back" id="menuLink" href="/">Back to menu</a>
+    </header>
+    <div class="hero">
+      <div class="eyebrow">Your data, clearly explained</div>
+      <h1>Privacy Policy</h1>
+      <p class="lead">This policy explains how DirectQR processes customer-account and QR table-order information for the restaurant whose QR code you scanned.</p>
+    </div>
+    <div class="notice"><strong>Important:</strong> DirectQR receives your order request for restaurant staff review. A request is not accepted until the restaurant accepts it in its DirectQR console.</div>
+    <div class="grid">
+      <section><h2>1. Information we collect</h2><p>When you create or use a DirectQR account and place an order, DirectQR may process:</p><ul><li>Name, username, phone number, and password hash</li><li>Restaurant and table QR context</li><li>Items, add-ons, quantities, guest count, order notes, order status, and order timestamps</li><li>Basic technical and security information needed to keep the service safe, such as session and request data</li></ul></section>
+      <section><h2>2. Why we use it</h2><ul><li>To authenticate your DirectQR account and submit your table-order request</li><li>To show the request to the relevant restaurant staff and support preparation, billing, and payment at the counter</li><li>To prevent duplicate requests, misuse, and unauthorised account access</li><li>To troubleshoot service errors and maintain the DirectQR platform</li></ul></section>
+      <section><h2>3. Restaurant access and account scope</h2><p>Your DirectQR account may work at more than one DirectQR restaurant. However, each restaurant can access only its own related orders and customer relationship. A restaurant cannot access your orders, notes, or history from another DirectQR restaurant.</p></section>
+      <section><h2>4. Payments</h2><p>DirectQR records only the payment method or settlement information entered by restaurant staff. DirectQR does not collect or store card numbers, CVV, card PINs, UPI PINs, or payment-app OTPs.</p></section>
+      <section><h2>5. Retention and deletion</h2><p>Order and account information may be retained for operational history, accounting, support, dispute resolution, and legal obligations. You may request correction or deletion of information where applicable, subject to records the restaurant or DirectQR must retain.</p></section>
+      <section><h2>6. Notifications</h2><p>Staff devices may opt in to browser notifications for new order alerts. Push subscriptions are stored only to deliver these alerts. You can remove notification permission in your device/browser settings.</p></section>
+      <section><h2>7. Contact and grievances</h2><p>For a restaurant order concern, contact the restaurant directly. For DirectQR platform privacy or account concerns, contact the operator through the details published by the restaurant or DirectQR support.</p><div class="contact"><strong>DirectQR privacy contact</strong><br><span id="contactPlaceholder">Replace with your DirectQR support email before commercial go-live.</span></div></section>
+      <section><h2>8. Changes</h2><p>We may update this policy when DirectQR features, legal requirements, or operational practices change. The current version will remain available on this page.</p></section>
+    </div>
+    <footer>Powered by DirectQR · QR ordering for modern cafés</footer>
+  </main>
+  <script>
+    // Preserve a scanned DirectQR path when navigating back from this policy page.
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug');
+    const token = params.get('token');
+    if (slug && token) {
+      const href = `/order/${encodeURIComponent(slug)}/${encodeURIComponent(token)}`;
+      document.querySelectorAll('#backLink,#menuLink').forEach((link) => { link.href = href; });
+    }
+  </script>
+</body>
+</html>

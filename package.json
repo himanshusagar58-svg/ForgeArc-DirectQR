@@ -1,0 +1,23 @@
+{
+  "name": "directqr",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm run dev -w @directqr/api\" \"npm run dev -w @directqr/web\"",
+    "dev:api": "npm run dev -w @directqr/api",
+    "dev:web": "npm run dev -w @directqr/web",
+    "build": "npm run build -w @directqr/web",
+    "db:schema": "npm run db:schema -w @directqr/api",
+    "db:seed": "npm run db:seed -w @directqr/api",
+    "test": "node --test packages/core/test/*.test.js apps/api/test/*.test.js",
+    "render:start": "npm run db:schema && node scripts/bootstrap-super-admin.mjs && node scripts/seed-if-empty.mjs && npm run start -w @directqr/api",
+    "push:keys": "node scripts/generate-vapid-keys.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
